@@ -1,0 +1,18 @@
+{
+  "id": "king-card-game",
+  "title": "King (Rıfkı)",
+  "author": "Seref",
+  "version": "1.0.0",
+  "description": "Klasik Türk usulü King (Rıfkı) kağıt oyunu. Akıllı yapay zeka rakiplere karşı 4 veya 20 ellik heyecan verici koz ve ceza turları.",
+  "genre": "Puzzle",
+  "controls": {
+    "D-pad": "Kart Seç / Menü",
+    "A": "Kartı Oyna / Onayla",
+    "B": "Geri / Kapat",
+    "X": "Skor Tablosu",
+    "Y": "King Kuralları",
+    "START": "Yeni Oyun / Başlat"
+  },
+  "responsive": true,
+  "screens": 2
+}

@@ -1,0 +1,520 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #0d1117;
+  color: #f0f6fc;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  user-select: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+#frame {
+  flex: none;
+  box-shadow: 0 0 0 8px #1f242c, 0 0 0 12px #384252;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+#screen {
+  position: relative;
+  width: var(--screen-width, 720px);
+  height: var(--screen-height, 480px);
+  overflow: hidden;
+  background: #0a1f13;
+  transform-origin: top left;
+}
+
+#screen canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+#perf {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.75);
+  font: 12px/1.3 ui-monospace, monospace;
+  white-space: pre;
+  z-index: 99;
+}
+
+#perf.over {
+  color: #ff5252;
+}
+
+#perf:empty {
+  display: none;
+}
+
+#legend {
+  margin: 0;
+  font-size: 13px;
+  color: #8b949e;
+}
+
+kbd {
+  padding: 2px 6px;
+  border: 1px solid #484f58;
+  border-radius: 4px;
+  font: 12px ui-monospace, monospace;
+  color: #e6edf3;
+  background: #21262d;
+}
+
+/* Handheld device fullscreen */
+body.handheld {
+  background: #000;
+  cursor: none;
+}
+
+body.handheld #frame {
+  box-shadow: none;
+  border-radius: 0;
+}
+
+body.handheld #legend {
+  display: none;
+}
+
+/* === KING GAME HUD STYLES === */
+
+.top-bar {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.badge {
+  background: rgba(13, 22, 17, 0.92);
+  border: 1.5px solid #2e4a39;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 17px;
+  font-weight: 700;
+  text-shadow: 0 2px 2px #000;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+.contract-badge {
+  color: #ffd166;
+  border-color: #ffd166;
+}
+
+.score-badge {
+  color: #48cae4;
+}
+
+/* Opponent Labels on Table */
+.opponent-tag {
+  position: absolute;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1.5px solid #334155;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 16px;
+  font-weight: 700;
+  text-shadow: 0 2px 2px #000;
+  white-space: nowrap;
+  z-index: 5;
+}
+
+.tag-west {
+  left: 12px;
+  top: 38%;
+  transform: translateY(-50%);
+}
+
+.tag-north {
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tag-east {
+  right: 12px;
+  top: 38%;
+  transform: translateY(-50%);
+}
+
+.active-turn {
+  border-color: #fbbf24;
+  background: rgba(245, 158, 11, 0.45);
+  color: #fef08a;
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.9);
+}
+
+/* Center trick banner & action message */
+.center-banner {
+  position: absolute;
+  top: 22%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10, 15, 20, 0.95);
+  border: 2px solid #38bdf8;
+  border-radius: 8px;
+  padding: 6px 18px;
+  font-size: 19px;
+  font-weight: 800;
+  text-align: center;
+  text-shadow: 0 2px 3px #000;
+  color: #f8fafc;
+  pointer-events: none;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.7);
+  max-width: 85%;
+  z-index: 15;
+}
+
+/* Bottom status & controller prompts */
+.bottom-bar {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 20;
+}
+
+/* Visual Card Selection Ribbon */
+.hand-ribbon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 6px;
+  background: rgba(8, 15, 12, 0.92);
+  border: 1px solid #23382c;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  overflow-x: auto;
+}
+
+.ribbon-card {
+  flex: none;
+  width: 38px;
+  height: 52px;
+  background: #f8fafc;
+  border: 2px solid #94a3b8;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 15px;
+  line-height: 1.1;
+  color: #0f172a;
+  transition: transform 0.1s ease, border-color 0.1s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+
+.ribbon-card.suit-hearts,
+.ribbon-card.suit-diamonds {
+  color: #dc2626;
+}
+
+.ribbon-card.suit-spades,
+.ribbon-card.suit-clubs {
+  color: #0f172a;
+}
+
+.ribbon-card.selected {
+  transform: translateY(-8px) scale(1.15);
+  border-color: #fbbf24;
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.9);
+  background: #fff;
+  z-index: 5;
+}
+
+.ribbon-card.unplayable {
+  opacity: 0.45;
+  filter: grayscale(0.5);
+  border-color: #475569;
+}
+
+.selection-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title-badge {
+  background: rgba(13, 22, 17, 0.94);
+  border: 1.5px solid #4ade80;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 2px 2px #000;
+}
+
+.card-title-badge.invalid {
+  border-color: #f87171;
+  color: #fca5a5;
+}
+
+.controls-hint {
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid #374151;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #93c5fd;
+  text-shadow: 0 1px 2px #000;
+}
+
+/* Modals */
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(5, 10, 14, 0.88);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+/* Special Contract Modal with Split Hand Preview */
+.modal-contract-box {
+  background: #111a1e;
+  border: 2px solid #2a433a;
+  border-radius: 12px;
+  padding: 14px 18px;
+  width: 96%;
+  max-width: 680px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+  display: flex;
+  flex-direction: column;
+}
+
+.contract-split {
+  display: flex;
+  gap: 14px;
+  margin: 10px 0;
+  text-align: left;
+}
+
+.contract-options-col {
+  flex: 1.1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hand-preview-col {
+  flex: 1;
+  background: rgba(15, 23, 28, 0.85);
+  border: 1.5px solid #2d3e38;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 16px;
+}
+
+.hand-suit-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+  border-bottom: 1px solid #1f2e29;
+}
+
+.hand-suit-label {
+  font-weight: 800;
+  width: 70px;
+}
+
+.hand-suit-cards {
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.rifki-alert {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 800;
+  margin-top: 4px;
+  text-align: center;
+}
+
+.rifki-safe {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border: 1px solid #22c55e;
+}
+
+.rifki-danger {
+  background: rgba(239, 68, 68, 0.25);
+  color: #f87171;
+  border: 1px solid #ef4444;
+}
+
+.modal-box {
+  background: #111a1e;
+  border: 2px solid #2a433a;
+  border-radius: 12px;
+  padding: 18px 24px;
+  width: 92%;
+  max-width: 580px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.85);
+  text-align: center;
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffd166;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 4px #000;
+}
+
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.menu-item {
+  padding: 8px 14px;
+  background: #1a2729;
+  border: 2px solid #2e4344;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-item.selected {
+  background: #2563eb;
+  border-color: #60a5fa;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(96, 165, 250, 0.6);
+  transform: scale(1.02);
+}
+
+.scoreboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.scoreboard-table th,
+.scoreboard-table td {
+  padding: 6px;
+  border-bottom: 1px solid #2d3748;
+  text-align: center;
+}
+
+.scoreboard-table th {
+  color: #ffd166;
+  border-bottom: 2px solid #ffd166;
+}
+
+.rule-box {
+  text-align: left;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #cbd5e1;
+  max-height: 260px;
+  overflow-y: hidden;
+}
+
+.penalty-badge {
+  background: rgba(40, 15, 20, 0.95);
+  border: 1.5px solid #f87171;
+  color: #fca5a5;
+  font-weight: 800;
+  font-size: 16px;
+  animation: pulse-penalty 2s infinite ease-in-out;
+}
+
+@keyframes pulse-penalty {
+  0%, 100% { border-color: #f87171; box-shadow: 0 0 6px rgba(248, 113, 113, 0.4); }
+  50% { border-color: #ef4444; box-shadow: 0 0 12px rgba(239, 68, 68, 0.8); }
+}
+
+/* Dual Screen (Nintendo DS / Anbernic RG DS) */
+.second-screen-container {
+  padding: 12px 18px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  background: #0d161a;
+  color: #f1f5f9;
+}
+
+.second-screen-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: #ffd166;
+  text-align: center;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 4px #000;
+}
+
+.second-table th, .second-table td {
+  padding: 8px 12px;
+  font-size: 17px;
+}
+
+.second-penalty-box {
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1.5px solid #334155;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #94a3b8;
+}
+
+.second-controls-info {
+  margin-top: auto;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748b;
+  padding: 6px 0;
+}
+
